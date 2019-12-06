@@ -1,0 +1,8 @@
+{
+  "parseIP": true,
+  "data": {
+    "ipv4": {
+      "txt": "test"
+    }
+  }
+}
