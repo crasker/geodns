@@ -24,10 +24,10 @@ func getQuestionName(z *zones.Zone, fqdn string) string {
 	return strings.ToLower(strings.Join(ql, "."))
 }
 
-func getIPFromDomain(dashedip string) (net.IP, error) {
-	i := strings.Split(dashedip, ".")[0]
-	p := strings.ReplaceAll(i, "-", ".")
-	ip := net.ParseIP(p)
+func getIPFromDomain(domain string) (net.IP, error) {
+	dashedIP := strings.Split(domain, ".")[0]
+	ipstr := strings.ReplaceAll(dashedIP, "-", ".")
+	ip := net.ParseIP(ipstr)
 	if ip == nil {
 		return nil, errors.New("Invalid IP from domain address")
 	}
@@ -49,7 +49,7 @@ func (srv *Server) serve(w dns.ResponseWriter, req *dns.Msg, z *zones.Zone) {
 			dns.HandleFailed(w, req)
 		}
 
-		h := dns.RR_Header{Name: qnamefqdn, Rrtype: 1, Class: 1, Ttl: 120, Rdlength: 0}
+		h := dns.RR_Header{Name: qnamefqdn, Rrtype: 1, Class: 1, Ttl: 86400, Rdlength: 0}
 
 		m.Answer = []dns.RR{&dns.A{Hdr: h, A: ip}}
 		w.WriteMsg(m)
