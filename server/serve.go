@@ -46,7 +46,6 @@ func (srv *Server) serve(w dns.ResponseWriter, req *dns.Msg, z *zones.Zone) {
 		ip, err := getIPFromDomain(qnamefqdn)
 		if err != nil {
 			applog.Printf("Error writing packet: %q, %s", err, m)
-			dns.HandleFailed(w, req)
 		}
 
 		h := dns.RR_Header{Name: qnamefqdn, Rrtype: 1, Class: 1, Ttl: 86400, Rdlength: 0}
