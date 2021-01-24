@@ -107,6 +107,9 @@ func (zone *Zone) ReadZoneFile(fileName string) (zerr error) {
 
 		case "data":
 			data = v.(map[string]interface{})
+
+		case "parseIP":
+			zone.ParseIP = v.(bool)
 		}
 	}
 

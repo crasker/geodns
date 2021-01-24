@@ -82,6 +82,7 @@ type Zone struct {
 	HasClosest   bool
 	HealthStatus health.Status
 	healthExport bool
+	ParseIP      bool
 
 	sync.RWMutex
 }

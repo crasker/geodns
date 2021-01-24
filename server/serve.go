@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 	"os"
@@ -23,10 +24,37 @@ func getQuestionName(z *zones.Zone, fqdn string) string {
 	return strings.ToLower(strings.Join(ql, "."))
 }
 
+func getIPFromDomain(domain string) (net.IP, error) {
+	dashedIP := strings.Split(domain, ".")[0]
+	ipstr := strings.ReplaceAll(dashedIP, "-", ".")
+	ip := net.ParseIP(ipstr)
+	if ip == nil {
+		return nil, errors.New("Invalid IP from domain address")
+	}
+	return ip, nil
+}
+
 func (srv *Server) serve(w dns.ResponseWriter, req *dns.Msg, z *zones.Zone) {
 
 	qnamefqdn := req.Question[0].Name
 	qtype := req.Question[0].Qtype
+
+	if qtype == dns.TypeA && z.ParseIP == true {
+		m := new(dns.Msg)
+		m.SetReply(req)
+
+		ip, err := getIPFromDomain(qnamefqdn)
+		if err != nil {
+			applog.Printf("Error writing packet: %q, %s", err, m)
+			dns.HandleFailed(w, req)
+		}
+
+		h := dns.RR_Header{Name: qnamefqdn, Rrtype: 1, Class: 1, Ttl: 86400, Rdlength: 0}
+
+		m.Answer = []dns.RR{&dns.A{Hdr: h, A: ip}}
+		w.WriteMsg(m)
+		return
+	}
 
 	var qle *querylog.Entry
 
