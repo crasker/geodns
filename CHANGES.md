@@ -1,8 +1,35 @@
 # GeoDNS Changelog
 
-## 3.0.0 February 2018
+## 3.2.1 November 2022
+* Go 1.19.3
+* Add new country codes
 
-(dev branch; still in testing)
+## 3.2.0 October 2021
+
+* Reload GeoIP 2 databases when they change (Tyler Davis)
+* Updated build process, rpm and deb packages now available
+* Build with Go 1.17.2 (Tyler Davis)
+* Minor fix to geodns-logs tool
+* Updated code comments (Sven Nebel)
+
+## 3.1.0 August 2021
+
+* NSID support
+* Support for DNS Cookies
+* dnsflagday cleanups
+* Add Russia's federal districts as country region codes
+* Update dependencies
+* Publish rpm and deb files
+
+## 3.0.2 December 2019
+
+* Better test errors when geoip2 files aren't found
+* Require Go 1.13 or later (just for build script for now)
+* Add geodns-logs to Docker image
+* Fix targeting tests (GeoIP data changed)
+* Update dependencies
+
+## 3.0.1 April 2019
 
 * Added Prometheus metrics support
 * Removed /monitor websocket interface
@@ -16,6 +43,7 @@
 * More/updated tests
 * Don't let the server ID be 127.0.0.1
 * Use 'dep' to manage dependencies
+* Remove built-in InfluxDB support from the log processing tool
 
 ## 2.7.0 February 13, 2017
 
