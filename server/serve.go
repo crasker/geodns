@@ -28,10 +28,10 @@ func getQuestionName(z *zones.Zone, fqdn string) string {
 
 func getIPFromDomain(domain string) (net.IP, error) {
 	dashedIP := strings.Split(domain, ".")[0]
-	ipstr := strings.ReplaceAll(dashedIP, "-", ".")
-	ip := net.ParseIP(ipstr)
+	ipStr := strings.ReplaceAll(dashedIP, "-", ".")
+	ip := net.ParseIP(ipStr)
 	if ip == nil {
-		return nil, errors.New("Invalid IP from domain address")
+		return nil, errors.New("invalid IP from domain address")
 	}
 	return ip, nil
 }
@@ -47,12 +47,27 @@ func (srv *Server) serve(w dns.ResponseWriter, req *dns.Msg, z *zones.Zone) {
 
 		ip, err := getIPFromDomain(qnamefqdn)
 		if err != nil {
-			applog.Printf("Error writing packet: %q, %s", err, m)
+			applog.Printf("Error getting ip from domain: %q, %s", err, qnamefqdn)
 		}
 
 		h := dns.RR_Header{Name: qnamefqdn, Rrtype: 1, Class: 1, Ttl: 86400, Rdlength: 0}
 
 		m.Answer = []dns.RR{&dns.A{Hdr: h, A: ip}}
+		w.WriteMsg(m)
+		return
+	}
+
+	if qtype == dns.TypeCAA && z.ParseIP == true {
+		m := new(dns.Msg)
+		m.SetReply(req)
+
+		record := new(dns.CAA)
+		record.Hdr = dns.RR_Header{Name: qnamefqdn, Rrtype: dns.TypeCAA, Class: dns.ClassINET, Ttl: 3600}
+		record.Tag = "issue"
+		record.Value = "letsencrypt.org"
+		record.Flag = 1
+
+		m.Answer = append(m.Answer, record)
 		w.WriteMsg(m)
 		return
 	}
